@@ -1,6 +1,6 @@
 locals {
   name   = "app-deploy"
-  update = lookup(var.arg, "update", false)
+  force-update = lookup(var.arg, "force-update", false)
 }
 
 resource "random_id" "bucket" {
@@ -21,7 +21,7 @@ module "bucket" {
 }
 
 resource "random_id" "trigger" {
-  count       = local.update ? 1 : 0
+  count       = local.force-update ? 1 : 0
   byte_length = 4
 
   keepers = {
@@ -37,6 +37,6 @@ resource "null_resource" "deploy" {
   }
 
   triggers = {
-    update = element(concat(random_id.trigger.*.hex, list("")), 0)
+    force-update = element(concat(random_id.trigger.*.hex, list("")), 0)
   }
 }
